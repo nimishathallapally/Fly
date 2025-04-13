@@ -1,0 +1,16 @@
+{
+  "name": "commercia",
+  "version": "1.0.0",
+  "description": "Human Computer Interaction Case Studies/Designs",
+  "main": "tailwind.config.js",
+  "repository": "https://github.com/ishankkumar-007/commercia.git",
+  "author": "Ishank Kumar <ishankkumar123@gmail.com>",
+  "scripts": {
+    "css": "npx tailwindcss -i ./app/static/src/styles.css -o ./app/static/css/main.css --minify --watch",
+    "app": "python run.py"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "tailwindcss": "^3.3.2"
+  }
+}

@@ -1,0 +1,49 @@
+<footer class="bg-gray-100 py-6">
+  <div class="max-w-7xl mx-auto px-4 text-center">
+    <p class="text-sm text-gray-600">
+      &copy; 2023 IndiFly. All rights reserved.
+    </p>
+    <!-- Optional Links for Privacy, Terms, etc. -->
+    <div class="mt-4">
+      <a href="{{ url_for('about') }}" class="text-indigo-600 hover:text-indigo-800 text-sm">About Us</a>
+      <span class="mx-2">|</span>
+      <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">Privacy Policy</a>
+      <span class="mx-2">|</span>
+      <a href="#" class="text-indigo-600 hover:text-indigo-800 text-sm">Terms & Conditions</a>
+    </div>
+  </div>
+</footer>
+<style>
+  /* Footer Styling */
+footer {
+  background-color: #f3f4f6; /* Light gray background */
+  padding: 2rem 0; /* Add vertical padding */
+}
+
+footer p {
+  font-size: 0.875rem; /* Small font for copyright text */
+  color: #4b5563; /* Dark gray color */
+  margin-bottom: 1rem; /* Add some space below the text */
+}
+
+footer .footer-links {
+  margin-top: 1rem; /* Add top margin for link section */
+}
+
+footer .footer-links a {
+  font-size: 0.875rem; /* Set text size */
+  color: #6366f1; /* Indigo color for links */
+  text-decoration: none; /* Remove underline */
+  margin: 0 0.5rem; /* Add space between links */
+}
+
+footer .footer-links a:hover {
+  color: #4338ca; /* Darker indigo color on hover */
+}
+
+footer .footer-links span {
+  color: #4b5563; /* Dark gray color for separator */
+}
+
+
+</style>

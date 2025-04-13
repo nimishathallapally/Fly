@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Flight Booking{% endblock %} - IndiFly</title>
+  
+  <!-- External CSS -->
+  <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" />
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- Optional: Inline Custom Styles -->
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="flex flex-col min-h-screen bg-gray-50 text-gray-800">
+  <!-- Header -->
+  <header class="bg-white shadow-md sticky top-0 z-50">
+    {% include 'components/header.html' %}
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-100 border-t py-6 text-center text-sm text-gray-600">
+    {% include 'components/footer.html' %}
+  </footer>
+</body>
+
+</html>

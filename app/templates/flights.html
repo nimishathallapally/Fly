@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Flights{% endblock %}
+
+{% block content %}
+<div class="text-center mb-8">
+  <h2 class="text-3xl font-bold text-indigo-700">Available Flights</h2>
+  <p class="text-gray-600">Showing {{ travel_class }} class flights for {{ date.strftime('%d %b %Y') }}</p>
+</div>
+
+{% if flights %}
+  <div class="space-y-6">
+    {% for flight in flights %}
+      <div class="card">
+        <div class="flex justify-between items-center">
+          <div>
+            <p class="text-xl font-semibold">{{ flight.source_airport }} ➡ {{ flight.destination_airport }}</p>
+            <p class="text-sm text-gray-600">Departure: {{ flight.departure_time.strftime('%I:%M %p') }} | Arrival: {{ flight.arrival_time.strftime('%I:%M %p') }}</p>
+            <p class="text-sm text-gray-500">{{ flight.airplane_type }}</p>
+          </div>
+          <div class="text-right">
+            <p class="text-lg font-semibold text-indigo-600">
+              ₹{{ flight.selected_seat.flight_cost[0].cost }}
+            </p>
+            <button class="btn btn-primary mt-2">Book Now</button>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <p class="text-center text-gray-600">No flights found for selected criteria.</p>
+{% endif %}
+{% endblock %}

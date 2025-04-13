@@ -1,0 +1,94 @@
+<header class="site-header">
+  <div class="container nav-container">
+    <div class="brand">
+      <a href="{{ url_for('index') }}">FlyNow</a>
+    </div>
+    <nav class="main-nav">
+      <a href="{{ url_for('index') }}">Book</a>
+      <a href="#">Trips</a>
+      <a href="#">Offers</a>
+      <a href="#">Check-in</a>
+      <a href="#">BluFly Club</a>
+    </nav>
+    <div class="header-right">
+      <a href="#" class="tariff-link">Tariff Sheet</a>
+      <button class="login-btn">Login</button>
+    </div>
+  </div>
+</header>
+
+
+<style>
+  /* Header Wrapper */
+  .site-header {
+    background: #f0f4ff;
+    padding: 0.8rem 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    font-family: 'Segoe UI', sans-serif;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  /* Container */
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  /* Brand */
+  .brand a {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1b1b3a;
+    text-decoration: none;
+  }
+
+  /* Navigation Links */
+  .main-nav a {
+    margin: 0 1rem;
+    font-weight: 500;
+    color: #1b1b3a;
+    text-decoration: none;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+
+  .main-nav a:hover {
+    color: #0077ff;
+  }
+
+  /* Tariff + Login */
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .tariff-link {
+    color: #1b1b3a;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+
+  .login-btn {
+    background: #f0f4ff;
+    border: 1px solid #0077ff;
+    color: #0077ff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .login-btn:hover {
+    background-color: #0077ff;
+    color: white;
+  }
+</style>
