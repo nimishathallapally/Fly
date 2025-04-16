@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Sign In{% endblock %}
+
+{% block content %}
+<div class="flex items-center justify-center min-h-screen bg-gray-100">
+  <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+    <h2 class="text-2xl font-bold text-indigo-700 mb-6 text-center">Sign In</h2>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <ul>
+        {% for category, message in messages %}
+          <li class="mb-2 text-{{ 'red' if category == 'error' else 'green' }}-600">{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="mb-4">
+        <label class="block text-gray-700 font-semibold mb-1" for="username">Username</label>
+        <input type="text" name="username" id="username" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 font-semibold mb-1" for="password">Password</label>
+        <input type="password" name="password" id="password" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 font-semibold mb-1">Audio CAPTCHA</label>
+        <audio controls class="mb-2">
+          <source src="{{ captcha_audio }}" type="audio/wav">
+          Your browser does not support the audio element.
+        </audio>
+        <input type="text" name="captcha" placeholder="Enter the text you hear" required class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500">
+      </div>
+
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg transition">
+        Sign In
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

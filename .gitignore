@@ -26,3 +26,8 @@ app/static/captchas/*
 # But not the folder itself
 !app/static/captchas/.gitkeep
 
+# Ignore all files inside captchas
+app/static/audio/*
+# But not the folder itself
+!app/static/captchas/.gitkeep
+

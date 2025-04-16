@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for,session
+from flask import Flask, render_template, request, redirect, url_for,session,flash,send_file
 from pymongo import MongoClient
 from datetime import datetime
 import os
 import random
 import string
 from captcha.image import ImageCaptcha
+from captcha.audio import AudioCaptcha
+from gtts import gTTS
 
 app = Flask(
     __name__,
@@ -28,6 +30,12 @@ def generate_captcha_text():
     import string
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
 
+@app.route('/audio-captcha')
+def audio_captcha():
+    audio = AudioCaptcha()
+    captcha_text = '5g9x'  # Normally, you'd generate this randomly and store it in the session
+    data = audio.generate(captcha_text)
+    return send_file(data, mimetype='audio/wav')
 
 @app.route("/")
 def index():
@@ -154,6 +162,43 @@ def card_payment():
 def payment_success():
     return render_template('payment_success.html')
 
+@app.route('/signin', methods=['GET', 'POST'])
+def signin():
+    if request.method == 'POST':
+        username = request.form.get('username', '')
+        password = request.form.get('password', '')
+        user_captcha = request.form.get('captcha', '').lower()
+        session_captcha = session.get('captcha_text', '').lower()
+
+        print(f"Username: {username}, Password: {password}, User CAPTCHA: {user_captcha}, Session CAPTCHA: {session_captcha}")
+
+        if user_captcha != session_captcha:
+            flash('Incorrect CAPTCHA. Please try again.', 'error')
+            return redirect(url_for('signin'))
+
+        flash('Signed in successfully!', 'success')
+        return redirect('/')
+
+    # --- GET request: generate new CAPTCHA ---
+    captcha_text = ''.join(random.choices(string.digits, k=5))
+    session['captcha_text'] = captcha_text
+    print(f"Generated CAPTCHA: {captcha_text}")
+
+    spoken_text = ' '.join(captcha_text)  # E.g., "5 2 3 9 1"
+    audio_dir = os.path.join(app.static_folder, 'audio')
+    if not os.path.exists(audio_dir):
+        os.makedirs(audio_dir)
+
+    audio_file = os.path.join(audio_dir, f'{captcha_text}.mp3')
+    if not os.path.exists(audio_file):
+        try:
+            tts = gTTS(text=spoken_text, lang='en', slow=False)
+            tts.save(audio_file)
+            print(f"Generated CAPTCHA audio: {audio_file}")
+        except Exception as e:
+            print(f"Error generating audio for CAPTCHA: {e}")
+
+    return render_template('signin.html', captcha_audio=f'/static/audio/{captcha_text}.mp3')
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
