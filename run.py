@@ -127,9 +127,6 @@ def payment():
     # Payment page route
     return render_template("payment.html")
 
-
-
-@app.route('/card_payment', methods=['GET', 'POST'])
 @app.route('/card_payment', methods=['GET', 'POST'])
 def card_payment():
     if request.method == 'POST':
@@ -157,12 +154,12 @@ def card_payment():
 
     # === GET request: Generate CAPTCHA ===
 
-    # Ensure CAPTCHA folder exists
-    captcha_dir = os.path.join(app.static_folder, 'captcha')
+    # Ensure 'captchas' folder exists inside static
+    captcha_dir = os.path.join(app.static_folder, 'captchas')
     os.makedirs(captcha_dir, exist_ok=True)
 
     # Generate image CAPTCHA
-    gimpy_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+    gimpy_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=7))
     session['gimpy_captcha_answer'] = gimpy_text
 
     image_captcha = ImageCaptcha()
@@ -172,8 +169,8 @@ def card_payment():
     image_path = os.path.join(captcha_dir, image_filename)
     image.save(image_path)
 
-    # Store relative path for template
-    session['captcha_image'] = f"captcha/{image_filename}"
+    # Store correct path for rendering
+    session['captcha_image'] = f"captchas/{image_filename}"
 
     # Generate math CAPTCHA
     a, b = random.randint(1, 10), random.randint(1, 10)
@@ -184,6 +181,7 @@ def card_payment():
     return render_template('card_payment.html',
                            captcha_image=session.get('captcha_image'),
                            math_question=math_question)
+
 
 
 @app.route('/payment_success')
