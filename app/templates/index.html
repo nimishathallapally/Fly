@@ -3,56 +3,226 @@
 {% block title %}Search Flights{% endblock %}
 
 {% block content %}
-<section class="bg-gradient-to-b from-white via-gray-50 to-blue-50 min-h-screen py-12">
-  <div class="max-w-xl mx-auto bg-white shadow-lg rounded-2xl p-8">
-    <div class="text-center mb-8">
-      <h1 class="text-4xl font-bold text-indigo-700 mb-2">Book Your Flight</h1>
-      <p class="text-gray-500">Search and reserve flights across India with ease</p>
-    </div>
+<!-- Loading Bar -->
+<div id="loadingWrapper" class="fixed top-0 left-0 w-full h-full bg-indigo-600 z-50 flex justify-center items-center">
+  <div class="text-blue text-xl font-semibold">
+    <p>Loading, please wait...</p>
+  </div>
+  <div id="loadingBarContainer" class="w-1/2 bg-gray-200 h-2 rounded-full mt-4">
+    <div id="loadingBar" class="bg-indigo-300 h-full rounded-full" style="width: 0%;"></div>
+  </div>
+</div>
 
-    <form method="POST" action="{{ url_for('search_flights') }}" class="space-y-6">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label for="source" class="block text-sm font-medium text-gray-700">From</label>
-          <select name="source" id="source" class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            {% for airport in airports %}
-              <option value="{{ airport._id }}">{{ airport.city }} ({{ airport.name }})</option>
-            {% endfor %}
-          </select>
-        </div>
 
-        <div>
-          <label for="destination" class="block text-sm font-medium text-gray-700">To</label>
-          <select name="destination" id="destination" class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            {% for airport in airports %}
-              <option value="{{ airport._id }}">{{ airport.city }} ({{ airport.name }})</option>
-            {% endfor %}
-          </select>
-        </div>
-      </div>
+<section class="bg-white min-h-screen py-12">
+  <div class="max-w-5xl mx-auto px-4">
+    <!-- Booking Card -->
+    <div class="bg-white shadow-2xl rounded-3xl p-6 md:p-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-indigo-700 mb-8 text-center">
+        Book a Flight
+      </h1>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label for="date" class="block text-sm font-medium text-gray-700">Departure Date</label>
-          <input type="date" name="date" id="date" class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none" required />
-        </div>
-
-        <div>
-          <label for="class" class="block text-sm font-medium text-gray-700">Class</label>
-          <select name="class" id="class" class="w-full border border-gray-300 rounded-lg px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-            <option value="ECO">Economy</option>
-            <option value="BUS">Business</option>
-            <option value="FST">First</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="pt-4">
-        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all">
-          Search Flights
+      <!-- Trip Type Tabs -->
+      <div class="flex justify-center space-x-4 mb-6">
+        <button type="button" id="oneWayBtn"
+          class="trip-toggle active-trip bg-indigo-600 text-white font-semibold px-6 py-2 rounded-full shadow">
+          One Way
+        </button>
+        <button type="button" id="roundTripBtn"
+          class="trip-toggle bg-gray-100 text-gray-800 font-medium px-6 py-2 rounded-full">
+          Round Trip
         </button>
       </div>
-    </form>
+
+      <!-- Flight Form -->
+      <form method="POST" action="{{ url_for('handle_search_flights') }}">
+        <input type="hidden" name="trip_type" id="tripTypeInput" value="one-way">
+
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+          <!-- From -->
+          <div class="md:col-span-1">
+            <label class="text-sm text-gray-600 font-medium mb-1 block">From</label>
+            <select name="source" required
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+              {% for airport in airports %}
+              <option value="{{ airport._id }}">{{ airport.city }} ({{ airport.name }})</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- To -->
+          <div class="md:col-span-1">
+            <label class="text-sm text-gray-600 font-medium mb-1 block">To</label>
+            <select name="destination" required
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+              {% for airport in airports %}
+              <option value="{{ airport._id }}">{{ airport.city }} ({{ airport.name }})</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Departure Date -->
+          <div class="md:col-span-1">
+            <label class="text-sm text-gray-600 font-medium mb-1 block">Departure</label>
+            <input type="date" name="date" required
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <!-- Return Date (hidden by default) -->
+          <div class="md:col-span-1" id="returnDateField" style="display: none;">
+            <label class="text-sm text-gray-600 font-medium mb-1 block">Return</label>
+            <input type="date" name="return_date"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+          </div>
+
+          <!-- Class -->
+          <div class="md:col-span-1">
+            <label class="text-sm text-gray-600 font-medium mb-1 block">Class</label>
+            <select name="class"
+              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+              <option value="ECO">Economy</option>
+              <option value="BUS">Business</option>
+              <option value="FST">First</option>
+            </select>
+          </div>
+
+          <!-- Submit -->
+          <div class="md:col-span-1">
+            <button type="submit"
+              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow transition">
+              Search
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Exclusive Deals Section -->
+    <!-- Exclusive Deals Section -->
+    <div class="mt-12">
+      <h2 class="text-2xl font-semibold text-gray-800 text-center mb-4">
+        ✈️ Find Exclusive Deals
+      </h2>
+      <p class="text-center text-gray-600 mb-8">
+        Explore low fares, limited-time offers, and special discounts on domestic and international routes.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6"> <!-- Increased grid cols to 4 -->
+        <!-- Deal Cards -->
+        <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold text-indigo-700 mb-2">Domestic Saver</h3>
+          <p class="text-sm text-gray-600">Up to 30% off on select domestic flights. Limited seats available.</p>
+        </div>
+        <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold text-indigo-700 mb-2">Round Trip Bonus</h3>
+          <p class="text-sm text-gray-600">Book a round trip & get ₹500 cashback on return flights.</p>
+        </div>
+        <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold text-indigo-700 mb-2">Student Discount</h3>
+          <p class="text-sm text-gray-600">Special fares and extra baggage for students with valid ID.</p>
+        </div>
+        <!-- New Deal Cards -->
+        <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold text-indigo-700 mb-2">Family Bundle</h3>
+          <p class="text-sm text-gray-600">Save 15% when booking 3 or more tickets for a family vacation.</p>
+        </div>
+        <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold text-indigo-700 mb-2">Weekend Getaway</h3>
+          <p class="text-sm text-gray-600">Special weekend getaway fares starting at ₹1,999.</p>
+        </div>
+        <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold text-indigo-700 mb-2">First Class Special</h3>
+          <p class="text-sm text-gray-600">Upgrade to First Class at 50% off for selected flights.</p>
+        </div>
+        <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
+          <h3 class="text-lg font-semibold text-indigo-700 mb-2">Business Class Upgrade</h3>
+          <p class="text-sm text-gray-600">Upgrade to Business Class for just ₹2,000 on select flights.</p>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
+<style>
+  /* Full-screen overlay for the loading screen */
+  #loadingWrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fff; /* Solid indigo background */
+    z-index: 9999; /* Ensure it sits on top */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* The container for the loading bar */
+  #loadingBarContainer {
+    width: 50%;
+    height: 8px;
+    background-color: #f3f4f6;; /* Light gray color */
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+
+  /* The loading bar itself */
+  #loadingBar {
+    height: 100%;
+    width: 0%; /* Start at 0% width */
+    background-color: #4f46e5; /* Indigo color for the loading bar */
+    border-radius: 5px;
+  }
+
+  /* Loading text */
+  #loadingWrapper .text-white {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+  }
+  
+</style>
+
+<!-- Script for toggling round trip -->
+<script>
+  const oneWayBtn = document.getElementById('oneWayBtn');
+  const roundTripBtn = document.getElementById('roundTripBtn');
+  const returnDateField = document.getElementById('returnDateField');
+  const tripTypeInput = document.getElementById('tripTypeInput');
+
+  oneWayBtn.addEventListener('click', () => {
+    oneWayBtn.classList.add('bg-indigo-600', 'text-white', 'active-trip');
+    roundTripBtn.classList.remove('bg-indigo-600', 'text-white', 'active-trip');
+    roundTripBtn.classList.add('bg-gray-100', 'text-gray-800');
+    returnDateField.style.display = 'none';
+    tripTypeInput.value = 'one-way';
+  });
+
+  roundTripBtn.addEventListener('click', () => {
+    roundTripBtn.classList.add('bg-indigo-600', 'text-white', 'active-trip');
+    oneWayBtn.classList.remove('bg-indigo-600', 'text-white', 'active-trip');
+    oneWayBtn.classList.add('bg-gray-100', 'text-gray-800');
+    returnDateField.style.display = 'block';
+    tripTypeInput.value = 'round-trip';
+  });
+
+  // Simulate a loading process and show the progress of the loading bar
+  window.addEventListener('load', function() {
+    const loadingBar = document.getElementById('loadingBar');
+    const loadingWrapper = document.getElementById('loadingWrapper');
+    
+    let width = 0;  // Initial width of the loading bar
+    const interval = setInterval(function() {
+      if (width >= 100) {
+        clearInterval(interval); // Stop the animation when 100% is reached
+        setTimeout(function() {
+          loadingWrapper.style.display = 'none'; // Hide the loading screen after the animation
+        }, 500); // Delay before hiding the loading screen
+      } else {
+        width++;  // Increment width
+        loadingBar.style.width = width + '%';  // Update the loading bar width
+      }
+    }, 30); // Adjust the speed of the loading bar animation (lower = faster)
+  });
+</script>
 {% endblock %}
