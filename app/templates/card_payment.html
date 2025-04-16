@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Card Payment{% endblock %}
+
+{% block content %}
+<div class="container mt-12 max-w-2xl mx-auto p-6 bg-white shadow-xl rounded-xl">
+  <h2 class="text-3xl font-bold text-indigo-700 text-center mb-6">Enter Card Details</h2>
+  
+  <!-- Card Payment Form -->
+  <form method="POST" action="{{ url_for('card_payment') }}" class="space-y-6">
+    <div>
+      <label for="card_number" class="block text-lg font-semibold mb-1">Card Number</label>
+      <input type="text" id="card_number" name="card_number" maxlength="19" 
+             class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500" 
+             placeholder="1234 5678 9876 5432" required>
+    </div>
+
+    <div class="flex space-x-4">
+      <div class="w-1/2">
+        <label for="expiry_date" class="block text-lg font-semibold mb-1">Expiry Date</label>
+        <input type="month" id="expiry_date" name="expiry_date" 
+               class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500" 
+               required>
+      </div>
+      <div class="w-1/2">
+        <label for="cvv" class="block text-lg font-semibold mb-1">CVV</label>
+        <input type="password" id="cvv" name="cvv" maxlength="4" 
+               class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500" 
+               placeholder="●●●" required>
+      </div>      
+    </div>
+
+    <!-- CAPTCHA -->
+    <div>
+      <label for="captcha_response" class="block text-lg font-semibold mb-1">Enter CAPTCHA</label>
+      <img src="{{ url_for('static', filename=captcha_image) }}" alt="Captcha Image" class="mb-2 rounded border">
+      <input type="text" id="captcha_response" name="captcha_response" 
+             class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500" 
+             placeholder="Type the text from the image" required>
+    </div>
+
+    {% if error %}
+      <p class="text-red-600 text-center font-semibold">{{ error }}</p>
+    {% endif %}
+
+    <div class="text-center">
+      <button type="submit" 
+              class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none">
+        Submit Payment
+      </button>
+    </div>
+  </form>
+</div>
+
+<!-- Card number formatting -->
+<script>
+  const cardInput = document.getElementById('card_number');
+  cardInput.addEventListener('input', function (e) {
+    let value = e.target.value.replace(/\D/g, '').substring(0, 16);
+    let formatted = value.replace(/(.{4})/g, '$1 ').trim();
+    e.target.value = formatted;
+  });
+</script>
+{% endblock %}
