@@ -22,7 +22,22 @@
             <p class="text-lg font-semibold text-indigo-600">
               ₹{{ flight.selected_seat.flight_cost[0].cost }}
             </p>
-            <button class="btn btn-primary mt-2">Book Now</button>
+            <!-- Updated Book Now Button -->
+            <button class="btn mt-2 px-4 py-2 text-white font-semibold bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none">
+              <a href="javascript:void(0)" onclick="showLoadingPage('{{ flight['_id'] }}')">Book Now</a>
+            </button>
+            
+            <!-- Loading Page for Booking -->
+            <div id="loadingPage-{{ flight['_id'] }}" class="hidden fixed top-0 left-0 w-full h-full bg-white z-50 flex justify-center items-center flex-col">
+              <div class="text-center text-indigo-700 text-2xl font-semibold">
+                <p>Booking, please wait...</p>
+              </div>
+              <div class="w-1/2 bg-gray-200 h-2 rounded-full mt-4">
+                <div id="loadingBar-{{ flight['_id'] }}" class="bg-indigo-300 h-full rounded-full" style="width: 0%;"></div>
+              </div>
+              <!-- Percentage below the bar -->
+              <div class="mt-2 text-indigo-700 font-semibold" id="loadingPercentageBelow-{{ flight['_id'] }}">0%</div>
+            </div>
           </div>
         </div>
       </div>
@@ -31,4 +46,37 @@
 {% else %}
   <p class="text-center text-gray-600">No flights found for selected criteria.</p>
 {% endif %}
+
+<script>
+  // Function to display the loading page and simulate the booking process
+  function showLoadingPage(flightId) {
+    console.log('Flight ID:', flightId);  // Debugging step to see if flight ID is passed
+
+    // Get the loading page element, loading bar, and percentage text
+    const loadingPage = document.getElementById(`loadingPage-${flightId}`);
+    const loadingBar = document.getElementById(`loadingBar-${flightId}`);
+    const loadingPercentageBelow = document.getElementById(`loadingPercentageBelow-${flightId}`);
+    
+    // Show the loading page
+    loadingPage.classList.remove('hidden');
+    
+    // Simulate the loading bar progression
+    let progress = 0;
+    const interval = setInterval(function() {
+      progress += 10;
+      loadingBar.style.width = progress + '%';  // Increase width of the loading bar
+      loadingPercentageBelow.textContent = progress + '%';  // Update the percentage below the bar
+
+      // Once the loading reaches 100%, stop the progress and redirect to booking page
+      if (progress >= 100) {
+        clearInterval(interval);
+        setTimeout(function() {
+          // Redirect to passenger details page
+          window.location.href = '/booking-details?flight_id=' + flightId;
+        }, 1000); // Delay before redirect (for better UX)
+      }
+    }, 500); // Increase the width every 500ms
+  }
+</script>
+
 {% endblock %}
