@@ -2,11 +2,14 @@ from flask import Flask, render_template, request, redirect, url_for,session,fla
 from pymongo import MongoClient
 from datetime import datetime
 import os
+from io import BytesIO
+from PIL import Image, ImageDraw, ImageFont
 import random
 import string
 from captcha.image import ImageCaptcha
 from captcha.audio import AudioCaptcha
 from gtts import gTTS
+import requests
 
 app = Flask(
     __name__,
@@ -200,29 +203,58 @@ def signin():
 
     return render_template('signin.html', captcha_audio=f'/static/audio/{captcha_text}.mp3')
 
-@app.route("/signup", methods=["GET", "POST"])
+RECAPTCHA_SECRET_KEY = '6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe'
+
+@app.route('/signup', methods=['GET', 'POST'])
 def signup():
-    if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        password = request.form.get("password")
+    if request.method == 'POST':
+        name = request.form['name']
+        email = request.form['email']
+        password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        recaptcha_response = request.form.get('g-recaptcha-response')
 
-        # Check if user already exists
-        existing_user = db.users.find_one({"email": email})
-        if existing_user:
-            return render_template("signup.html", error="User already exists.")
+        # Validate reCAPTCHA
+        recaptcha_verification = requests.post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            data={
+                'secret': RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+        )
+        result = recaptcha_verification.json()
+        if not result.get('success'):
+            return render_template('signup.html', error="reCAPTCHA verification failed. Please try again.")
 
-        # Insert new user
-        db.users.insert_one({
-            "name": name,
-            "email": email,
-            "password": password  # Ideally hash this before storing in production
-        })
+        if password != confirm_password:
+            return render_template('signup.html', error="Passwords do not match")
 
-        return redirect(url_for("index"))
+        # Store user in DB (replace with actual MongoDB insertion)
+        # db.users.insert_one({"name": name, "email": email, "password": password})
 
-    return render_template("signup.html")
+        return redirect(url_for('index'))
 
+    return render_template('signup.html')
+
+
+
+@app.route('/generate_captcha')
+def generate_captcha():
+    # Generate random string
+    captcha_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+    session['captcha'] = captcha_text
+
+    # Create image
+    img = Image.new('RGB', (150, 50), color=(255, 255, 255))
+    draw = ImageDraw.Draw(img)
+    font = ImageFont.truetype("arial.ttf", 32)
+    draw.text((10, 5), captcha_text, font=font, fill=(0, 0, 0))
+
+    # Save to buffer
+    buf = BytesIO()
+    img.save(buf, 'PNG')
+    buf.seek(0)
+    return send_file(buf, mimetype='image/png')
 
 if __name__ == "__main__":
     app.run(debug=True)
