@@ -3,39 +3,68 @@
 {% block title %}Payment Options{% endblock %}
 
 {% block content %}
+<!-- Loading bar -->
+<div id="loading-bar" class="fixed top-0 left-0 w-full h-1 z-50 animate-stripes"></div>
+
 <div class="container max-w-xl mx-auto mt-10">
   <h2 class="text-3xl font-bold text-indigo-700 text-center mb-8">Select a Payment Method</h2>
 
   <div class="space-y-6">
-    <!-- Credit/Debit Card -->
-    <a href="{{ url_for('card_payment') }}" class="block bg-white p-6 shadow-md rounded-xl hover:shadow-lg transition transform hover:scale-105">
-      <h3 class="text-xl font-semibold text-gray-800">Credit/Debit Card</h3>
-      <p class="text-sm text-gray-500">Pay using Visa, MasterCard, etc.</p>
+    <!-- Payment options -->
+    {% for method in ['Credit/Debit Card', 'PayPal', 'Apple Pay', 'Google Pay', 'Bitcoin'] %}
+    <a href="{{ url_for('card_payment') }}"
+       class="block bg-white p-6 shadow-md rounded-xl hover:shadow-lg transition transform hover:scale-105">
+      <h3 class="text-xl font-semibold text-gray-800">{{ method }}</h3>
+      <p class="text-sm text-gray-500">
+        {% if method == 'Credit/Debit Card' %}
+          Pay using Visa, MasterCard, etc.
+        {% elif method == 'PayPal' %}
+          Use your PayPal account
+        {% elif method == 'Apple Pay' %}
+          Pay using your Apple account
+        {% elif method == 'Google Pay' %}
+          Pay via Google Pay
+        {% else %}
+          Pay using Cryptocurrency
+        {% endif %}
+      </p>
     </a>
-
-    <!-- PayPal -->
-    <a href="{{ url_for('card_payment') }}" class="block bg-white p-6 shadow-md rounded-xl hover:shadow-lg transition transform hover:scale-105">
-      <h3 class="text-xl font-semibold text-gray-800">PayPal</h3>
-      <p class="text-sm text-gray-500">Use your PayPal account</p>
-    </a>
-
-    <!-- Apple Pay -->
-    <a href="{{ url_for('card_payment') }}" class="block bg-white p-6 shadow-md rounded-xl hover:shadow-lg transition transform hover:scale-105">
-      <h3 class="text-xl font-semibold text-gray-800">Apple Pay</h3>
-      <p class="text-sm text-gray-500">Pay using your Apple account</p>
-    </a>
-
-    <!-- Google Pay -->
-    <a href="{{ url_for('card_payment') }}" class="block bg-white p-6 shadow-md rounded-xl hover:shadow-lg transition transform hover:scale-105">
-      <h3 class="text-xl font-semibold text-gray-800">Google Pay</h3>
-      <p class="text-sm text-gray-500">Pay via Google Pay</p>
-    </a>
-
-    <!-- Bitcoin -->
-    <a href="{{ url_for('card_payment') }}" class="block bg-white p-6 shadow-md rounded-xl hover:shadow-lg transition transform hover:scale-105">
-      <h3 class="text-xl font-semibold text-gray-800">Bitcoin</h3>
-      <p class="text-sm text-gray-500">Pay using Cryptocurrency</p>
-    </a>
+    {% endfor %}
   </div>
 </div>
+
+<!-- Hide loading bar on load -->
+<script>
+  window.addEventListener('load', () => {
+    const bar = document.getElementById('loading-bar');
+    if (bar) {
+      bar.style.transition = 'opacity 0.4s ease';
+      bar.style.opacity = '0';
+      setTimeout(() => bar.remove(), 400);
+    }
+  });
+</script>
+
+<style>
+  @keyframes stripes {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-stripes {
+    background: repeating-linear-gradient(
+      45deg,
+      #6366f1 0px,
+      #6366f1 10px,
+      #8b5cf6 10px,
+      #8b5cf6 20px
+    );
+    background-size: 200% auto;
+    animation: stripes 3s linear infinite; /* slowed down */
+  }
+</style>
 {% endblock %}
