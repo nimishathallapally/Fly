@@ -20,3 +20,9 @@ node_modules
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Ignore all files inside captchas
+app/static/captchas/*
+# But not the folder itself
+!app/static/captchas/.gitkeep
+
