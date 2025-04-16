@@ -155,5 +155,29 @@ def payment_success():
     return render_template('payment_success.html')
 
 
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if request.method == "POST":
+        name = request.form.get("name")
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        # Check if user already exists
+        existing_user = db.users.find_one({"email": email})
+        if existing_user:
+            return render_template("signup.html", error="User already exists.")
+
+        # Insert new user
+        db.users.insert_one({
+            "name": name,
+            "email": email,
+            "password": password  # Ideally hash this before storing in production
+        })
+
+        return redirect(url_for("index"))
+
+    return render_template("signup.html")
+
+
 if __name__ == "__main__":
     app.run(debug=True)

@@ -12,6 +12,7 @@
     </nav>
     <div class="header-right">
       <a href="#" class="tariff-link">Tariff Sheet</a>
+      <a href="{{ url_for('signup') }}" class="signup-btn">Signup</a>
       <button class="login-btn">Login</button>
     </div>
   </div>
@@ -91,4 +92,22 @@
     background-color: #0077ff;
     color: white;
   }
+
+  .signup-btn {
+    background: #f0f4ff;
+    border: 1px solid #0077ff;
+    color: #0077ff;
+    padding: 0.4rem 0.8rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+.signup-btn:hover {
+    background-color: #0077ff;
+    color: white;
+  }
+
 </style>
