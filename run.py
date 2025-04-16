@@ -124,24 +124,35 @@ def card_payment():
 
         # Check if the CAPTCHA response is correct
         if captcha_response != session.get('captcha_text'):
-            return render_template('card_payment.html', error="Incorrect CAPTCHA, please try again.")
+            # Generate new CAPTCHA text and image
+            captcha_text = generate_captcha_text()
+            session['captcha_text'] = captcha_text
+
+            image = ImageCaptcha()
+            captcha_image_path = os.path.join(captcha_dir, f'{captcha_text}.png')
+            image.write(captcha_text, captcha_image_path)
+
+            # Return to the page with the error and new CAPTCHA
+            return render_template('card_payment.html', 
+                                   error="Incorrect CAPTCHA, please try again.", 
+                                   captcha_image=f'captchas/{captcha_text}.png')
 
         # Process the payment (skip for demo)
         return redirect(url_for('payment_success'))
 
-    # Generate CAPTCHA text and image
+    # Generate CAPTCHA text and image for the initial page load
     captcha_text = generate_captcha_text()
     session['captcha_text'] = captcha_text
 
     image = ImageCaptcha()
     captcha_image_path = os.path.join(captcha_dir, f'{captcha_text}.png')
-
-    # Write the CAPTCHA image to the file system
     image.write(captcha_text, captcha_image_path)
 
-    # Render the template with the correct image path
     return render_template('card_payment.html', captcha_image=f'captchas/{captcha_text}.png')
 
+@app.route('/payment_success')
+def payment_success():
+    return render_template('payment_success.html')
 
 
 if __name__ == "__main__":
