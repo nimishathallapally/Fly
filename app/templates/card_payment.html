@@ -7,11 +7,12 @@
 <div id="page-loader" class="fixed inset-0 flex justify-center items-center bg-white bg-opacity-75 z-50">
   <div class="relative w-1/2">
     <div class="progress h-6 rounded overflow-hidden">
-      <div class="progress-bar progress-bar-striped active bg-indigo-600 h-full" role="progressbar"
-           aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:0%">
+      <div class="progress-bar progress-bar-striped active bg-indigo-600 h-full" role="progressbar" aria-valuenow="0"
+        aria-valuemin="0" aria-valuemax="100" style="width:0%">
       </div>
     </div>
-    <span class="progress-text absolute right-2 top-1/2 transform -translate-y-1/2 text-sm font-semibold text-indigo-2000">
+    <span
+      class="progress-text absolute right-2 top-1/2 transform -translate-y-1/2 text-sm font-semibold text-indigo-2000">
       0%
     </span>
   </div>
@@ -19,47 +20,66 @@
 
 <div class="container mt-12 max-w-2xl mx-auto p-6 bg-white shadow-xl rounded-xl">
   <h2 class="text-3xl font-bold text-indigo-700 text-center mb-6">Enter Card Details</h2>
-  
+
   <!-- Card Payment Form -->
   <form method="POST" action="{{ url_for('card_payment') }}" class="space-y-6">
     <div>
       <label for="card_number" class="block text-lg font-semibold mb-1">Card Number</label>
-      <input type="text" id="card_number" name="card_number" maxlength="19" 
-             class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500" 
-             placeholder="1234 5678 9876 5432" required>
+      <input type="text" id="card_number" name="card_number" maxlength="19"
+        class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500"
+        placeholder="1234 5678 9876 5432" required>
     </div>
 
     <div class="flex space-x-4">
       <div class="w-1/2">
         <label for="expiry_date" class="block text-lg font-semibold mb-1">Expiry Date</label>
-        <input type="month" id="expiry_date" name="expiry_date" 
-               class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500" 
-               required>
+        <input type="month" id="expiry_date" name="expiry_date"
+          class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500"
+          required>
       </div>
       <div class="w-1/2">
         <label for="cvv" class="block text-lg font-semibold mb-1">CVV</label>
-        <input type="password" id="cvv" name="cvv" maxlength="4" 
-               class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500" 
-               placeholder="●●●" required>
-      </div>      
+        <input type="password" id="cvv" name="cvv" maxlength="4"
+          class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500"
+          placeholder="●●●" required>
+      </div>
     </div>
 
-    <!-- CAPTCHA -->
+    <!-- CAPTCHA Sections -->
+    <!-- CAPTCHA Type Selector -->
     <div>
-      <label for="captcha_response" class="block text-lg font-semibold mb-1">Enter CAPTCHA</label>
-      <img src="{{ url_for('static', filename=captcha_image) }}" alt="Captcha Image" class="mb-2 rounded border">
-      <input type="text" id="captcha_response" name="captcha_response" 
-             class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500" 
-             placeholder="Type the text from the image" required>
+      <label class="block text-lg font-semibold mb-1">Choose CAPTCHA Type</label>
+      <div class="flex gap-4 items-center">
+        <label><input type="radio" name="captcha_type" value="gimpy" checked onchange="toggleCaptcha()"> Image
+          CAPTCHA</label>
+        <label><input type="radio" name="captcha_type" value="math" onchange="toggleCaptcha()"> Math CAPTCHA</label>
+      </div>
     </div>
+
+    <!-- CAPTCHA Sections -->
+    <div id="gimpy-section">
+      <label for="captcha_response" class="block text-lg font-semibold mt-3">Enter CAPTCHA</label>
+      <img src="{{ url_for('static', filename=captcha_image) }}" alt="Captcha Image" class="mb-2 rounded border">
+      <input type="text" id="captcha_response" name="captcha_response"
+        class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500"
+        placeholder="Type the text from the image">
+    </div>
+
+    <div id="math-section" style="display: none;">
+      <label for="captcha_response_math" class="block text-lg font-semibold mt-3">Solve: {{ math_question }}</label>
+      <input type="text" id="captcha_response_math" name="captcha_response_math"
+        class="form-input w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring focus:border-indigo-500"
+        placeholder="Enter your answer">
+    </div>
+
 
     {% if error %}
-      <p class="text-red-600 text-center font-semibold">{{ error }}</p>
+    <p class="text-red-600 text-center font-semibold">{{ error }}</p>
     {% endif %}
 
     <div class="text-center">
-      <button type="submit" 
-              class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none">
+      <button type="submit"
+        class="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105 focus:outline-none">
         Submit Payment
       </button>
     </div>
@@ -96,6 +116,14 @@
       }
     }
   }, 40);
+  function toggleCaptcha() {
+    const gimpy = document.getElementById('gimpy-section');
+    const math = document.getElementById('math-section');
+    const selected = document.querySelector('input[name="captcha_type"]:checked').value;
+    gimpy.style.display = selected === 'gimpy' ? 'block' : 'none';
+    math.style.display = selected === 'math' ? 'block' : 'none';
+  }
+
 </script>
 
 
@@ -108,16 +136,14 @@
     overflow: hidden;
   }
 
-    /* Progress bar with striped animation */
-    .progress-bar {
+  /* Progress bar with striped animation */
+  .progress-bar {
     height: 100%;
-    background: repeating-linear-gradient(
-      45deg,
-      #6366f1,
-      #6366f1 10px,
-      #4f46e5 10px,
-      #4f46e5 20px
-    );
+    background: repeating-linear-gradient(45deg,
+        #6366f1,
+        #6366f1 10px,
+        #4f46e5 10px,
+        #4f46e5 20px);
     animation: progress-stripes 1s linear infinite;
     text-align: center;
     line-height: 20px;

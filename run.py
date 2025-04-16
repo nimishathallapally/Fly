@@ -10,6 +10,9 @@ from captcha.image import ImageCaptcha
 from captcha.audio import AudioCaptcha
 from gtts import gTTS
 import requests
+from PIL import Image, ImageDraw, ImageFont
+import io
+import base64
 
 app = Flask(
     __name__,
@@ -125,41 +128,63 @@ def payment():
     return render_template("payment.html")
 
 
+
+@app.route('/card_payment', methods=['GET', 'POST'])
 @app.route('/card_payment', methods=['GET', 'POST'])
 def card_payment():
     if request.method == 'POST':
-        card_number = request.form['card_number']
-        expiry_date = request.form['expiry_date']
-        cvv = request.form['cvv']
-        captcha_response = request.form['captcha_response']
+        captcha_type = request.form.get('captcha_type', 'gimpy')
 
-        # Check if the CAPTCHA response is correct
-        if captcha_response != session.get('captcha_text'):
-            # Generate new CAPTCHA text and image
-            captcha_text = generate_captcha_text()
-            session['captcha_text'] = captcha_text
+        if captcha_type == 'gimpy':
+            user_input = request.form.get('captcha_response', '').strip().lower()
+            expected = session.get('gimpy_captcha_answer', '').lower()
+            if user_input != expected:
+                return render_template('card_payment.html',
+                                       captcha_image=session.get('captcha_image'),
+                                       math_question=session.get('math_question'),
+                                       error="Incorrect image CAPTCHA")
 
-            image = ImageCaptcha()
-            captcha_image_path = os.path.join(captcha_dir, f'{captcha_text}.png')
-            image.write(captcha_text, captcha_image_path)
+        elif captcha_type == 'math':
+            user_input = request.form.get('captcha_response_math', '').strip()
+            expected = session.get('math_captcha_answer', '')
+            if user_input != expected:
+                return render_template('card_payment.html',
+                                       captcha_image=session.get('captcha_image'),
+                                       math_question=session.get('math_question'),
+                                       error="Incorrect math CAPTCHA")
 
-            # Return to the page with the error and new CAPTCHA
-            return render_template('card_payment.html', 
-                                   error="Incorrect CAPTCHA, please try again.", 
-                                   captcha_image=f'captchas/{captcha_text}.png')
+        return render_template("payment_success.html")
 
-        # Process the payment (skip for demo)
-        return redirect(url_for('payment_success'))
+    # === GET request: Generate CAPTCHA ===
 
-    # Generate CAPTCHA text and image for the initial page load
-    captcha_text = generate_captcha_text()
-    session['captcha_text'] = captcha_text
+    # Ensure CAPTCHA folder exists
+    captcha_dir = os.path.join(app.static_folder, 'captcha')
+    os.makedirs(captcha_dir, exist_ok=True)
 
-    image = ImageCaptcha()
-    captcha_image_path = os.path.join(captcha_dir, f'{captcha_text}.png')
-    image.write(captcha_text, captcha_image_path)
+    # Generate image CAPTCHA
+    gimpy_text = ''.join(random.choices(string.ascii_uppercase + string.digits, k=5))
+    session['gimpy_captcha_answer'] = gimpy_text
 
-    return render_template('card_payment.html', captcha_image=f'captchas/{captcha_text}.png')
+    image_captcha = ImageCaptcha()
+    image = image_captcha.generate_image(gimpy_text)
+
+    image_filename = f"{gimpy_text}.png"
+    image_path = os.path.join(captcha_dir, image_filename)
+    image.save(image_path)
+
+    # Store relative path for template
+    session['captcha_image'] = f"captcha/{image_filename}"
+
+    # Generate math CAPTCHA
+    a, b = random.randint(1, 10), random.randint(1, 10)
+    math_question = f"{a} + {b}"
+    session['math_question'] = math_question
+    session['math_captcha_answer'] = str(a + b)
+
+    return render_template('card_payment.html',
+                           captcha_image=session.get('captcha_image'),
+                           math_question=math_question)
+
 
 @app.route('/payment_success')
 def payment_success():
