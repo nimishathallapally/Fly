@@ -13,7 +13,6 @@
   </div>
 </div>
 
-
 <section class="bg-white min-h-screen py-12">
   <div class="max-w-5xl mx-auto px-4">
     <!-- Booking Card -->
@@ -42,8 +41,7 @@
           <!-- From -->
           <div class="md:col-span-1">
             <label class="text-sm text-gray-600 font-medium mb-1 block">From</label>
-            <select name="source" required
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+            <select name="source" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
               {% for airport in airports %}
               <option value="{{ airport._id }}">{{ airport.city }} ({{ airport.name }})</option>
               {% endfor %}
@@ -53,8 +51,7 @@
           <!-- To -->
           <div class="md:col-span-1">
             <label class="text-sm text-gray-600 font-medium mb-1 block">To</label>
-            <select name="destination" required
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+            <select name="destination" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
               {% for airport in airports %}
               <option value="{{ airport._id }}">{{ airport.city }} ({{ airport.name }})</option>
               {% endfor %}
@@ -64,22 +61,19 @@
           <!-- Departure Date -->
           <div class="md:col-span-1">
             <label class="text-sm text-gray-600 font-medium mb-1 block">Departure</label>
-            <input type="date" name="date" required
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+            <input type="date" name="date" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
           </div>
 
           <!-- Return Date (hidden by default) -->
           <div class="md:col-span-1" id="returnDateField" style="display: none;">
             <label class="text-sm text-gray-600 font-medium mb-1 block">Return</label>
-            <input type="date" name="return_date"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+            <input type="date" name="return_date" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
           </div>
 
           <!-- Class -->
           <div class="md:col-span-1">
             <label class="text-sm text-gray-600 font-medium mb-1 block">Class</label>
-            <select name="class"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
+            <select name="class" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-indigo-500">
               <option value="ECO">Economy</option>
               <option value="BUS">Business</option>
               <option value="FST">First</option>
@@ -88,8 +82,7 @@
 
           <!-- Submit -->
           <div class="md:col-span-1">
-            <button type="submit"
-              class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow transition">
+            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2.5 px-4 rounded-lg shadow transition">
               Search
             </button>
           </div>
@@ -97,7 +90,15 @@
       </form>
     </div>
 
-    <!-- Exclusive Deals Section -->
+    <!-- Limited Time Offer with Timer -->
+    <div id="timerDeal" class="bg-red-50 mt-12 p-6 rounded-2xl shadow-md text-center">
+      <h2 class="text-2xl font-bold text-red-700 mb-2">🔥 Limited Time Offer!</h2>
+      <p class="text-gray-700 mb-3">Get up to 40% off on all round trip bookings. Hurry, this deal expires soon!</p>
+      <div class="text-lg font-semibold text-red-600">
+        Offer ends in: <span id="countdownTimer">15:00</span>
+      </div>
+    </div>
+
     <!-- Exclusive Deals Section -->
     <div class="mt-12">
       <h2 class="text-2xl font-semibold text-gray-800 text-center mb-4">
@@ -109,7 +110,7 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-6"> <!-- Increased grid cols to 4 -->
         <!-- Deal Cards -->
         <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
-          <h3 class="text-lg font-semibold text-indigo-700 mb-2">Domestic Saver</h3>
+          <h3 class="text-lg font-semibold text-indigo-700 mb-2">Domestic Saver Limited Time offer</h3>
           <p class="text-sm text-gray-600">Up to 30% off on select domestic flights. Limited seats available.</p>
         </div>
         <div class="bg-indigo-50 p-4 rounded-xl shadow hover:shadow-md transition">
@@ -139,51 +140,34 @@
         </div>
       </div>
     </div>
-
-  </div>
 </section>
+
 <style>
-  /* Full-screen overlay for the loading screen */
   #loadingWrapper {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #fff; /* Solid indigo background */
-    z-index: 9999; /* Ensure it sits on top */
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #fff;
+    z-index: 9999;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
   }
-
-  /* The container for the loading bar */
   #loadingBarContainer {
     width: 50%;
     height: 8px;
-    background-color: #f3f4f6;; /* Light gray color */
+    background-color: #f3f4f6;
     border-radius: 5px;
     margin-top: 20px;
   }
-
-  /* The loading bar itself */
   #loadingBar {
     height: 100%;
-    width: 0%; /* Start at 0% width */
-    background-color: #4f46e5; /* Indigo color for the loading bar */
+    width: 0%;
+    background-color: #4f46e5;
     border-radius: 5px;
   }
-
-  /* Loading text */
-  #loadingWrapper .text-white {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-  }
-  
 </style>
 
-<!-- Script for toggling round trip -->
 <script>
   const oneWayBtn = document.getElementById('oneWayBtn');
   const roundTripBtn = document.getElementById('roundTripBtn');
@@ -206,23 +190,37 @@
     tripTypeInput.value = 'round-trip';
   });
 
-  // Simulate a loading process and show the progress of the loading bar
-  window.addEventListener('load', function() {
+  // Loading bar animation
+  window.addEventListener('load', function () {
     const loadingBar = document.getElementById('loadingBar');
     const loadingWrapper = document.getElementById('loadingWrapper');
-    
-    let width = 0;  // Initial width of the loading bar
-    const interval = setInterval(function() {
+    let width = 0;
+    const interval = setInterval(function () {
       if (width >= 100) {
-        clearInterval(interval); // Stop the animation when 100% is reached
-        setTimeout(function() {
-          loadingWrapper.style.display = 'none'; // Hide the loading screen after the animation
-        }, 500); // Delay before hiding the loading screen
+        clearInterval(interval);
+        setTimeout(() => loadingWrapper.style.display = 'none', 500);
       } else {
-        width++;  // Increment width
-        loadingBar.style.width = width + '%';  // Update the loading bar width
+        width++;
+        loadingBar.style.width = width + '%';
       }
-    }, 10); // Adjust the speed of the loading bar animation (lower = faster)
+    }, 10);
   });
+
+  // Countdown Timer for Limited Time Offer
+  const countdownTimer = document.getElementById("countdownTimer");
+  const timerDeal = document.getElementById("timerDeal");
+  let totalTime = 15 * 60; // 15 minutes in seconds
+
+  const timerInterval = setInterval(() => {
+    if (totalTime <= 0) {
+      clearInterval(timerInterval);
+      timerDeal.style.display = "none"; // Hide deal when time is up
+    } else {
+      const minutes = Math.floor(totalTime / 60);
+      const seconds = totalTime % 60;
+      countdownTimer.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      totalTime--;
+    }
+  }, 1000);
 </script>
 {% endblock %}
