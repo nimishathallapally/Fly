@@ -149,12 +149,6 @@ http://localhost:5000
 
 ---
 
-## License
-
-This project is licensed under the MIT License.
-
----
-
 ## Notes
 
 * You can modify the CAPTCHA difficulty and styling.
