@@ -162,6 +162,6 @@ This project is licensed under the MIT License.
 
 ---
 
-Thank you for exploring Commercia – an HCI-driven design prototype!
+Thank you for exploring Fly – an HCI-driven design prototype!
 
 ---
