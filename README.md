@@ -1,6 +1,6 @@
 # Fly – HCI Case Study
 
-**Commercia** is a Human-Computer Interaction (HCI) case study that explores the usability and design of **loading bars** and **CAPTCHAs** in web applications. This project simulates a flight booking system that includes  booking forms, payment flow, and dynamic CAPTCHA selection — all styled using Tailwind CSS and built with Flask.
+**Fly** is a Human-Computer Interaction (HCI) case study that explores the usability and design of **loading bars** and **CAPTCHAs** in web applications. This project simulates a flight booking system that includes booking forms, payment flow, and dynamic CAPTCHA selection — all styled using Tailwind CSS and built with Flask.
 
 ---
 
